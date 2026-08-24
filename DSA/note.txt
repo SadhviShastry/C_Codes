@@ -1,0 +1,5 @@
+To Run A File
+1. GO To Terminal 
+2. Execute the following commands 
+PS C:\SADHVI\C_Codes\DSA> gcc filename.c
+PS C:\SADHVI\C_Codes\DSA> ./a.exe
