@@ -1,23 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int inf = 999999;
+#define INF 9999999
+#define MAX 20
 
-int p[9] = {0};
+int parent[MAX];
 
-int applyfind(int i)
+int find(int i)
 {
-    while (p[i] != 0)
-        i = p[i];
+    while (parent[i] != -1)
+        i = parent[i];
 
     return i;
 }
 
-int applyunion(int i, int j)
+int unionSet(int i, int j)
 {
     if (i != j)
     {
-        p[j] = i;
+        parent[j] = i;
         return 1;
     }
 
@@ -27,70 +28,91 @@ int applyunion(int i, int j)
 int main()
 {
     int n;
-    int cost[9][9];
+    int edges = 0;
+    int minCost = 0;
+
+    int cost[MAX][MAX];
+
     int i, j;
     int a, b, u, v;
-    int ne = 1;
-    int mincost = 0;
+    int min;
 
-    printf("Enter the number of vertices: ");
+    printf("========================\n");
+    printf("       KRUSKAL'S MST\n");
+    printf("========================\n");
+
+    printf("Enter the no of vertices: ");
     scanf("%d", &n);
 
-    printf("\nEnter the cost adjacency matrix:\n");
-    printf("(Enter 0 if there is no edge)\n\n");
+    /* Initialize parent array */
+    for (i = 0; i < n; i++)
+    {
+        parent[i] = -1;
+    }
+
+    printf("Enter the cost adjacency matrix:\n");
+    printf("(Enter 0 if there is no edge)\n");
 
     for (i = 0; i < n; i++)
     {
         for (j = 0; j < n; j++)
         {
             scanf("%d", &cost[i][j]);
-
-            if (cost[i][j] == 0)
-            {
-                cost[i][j] = inf;
-            }
         }
     }
 
-    printf("\nMinimum Cost Spanning Tree:\n");
-
-    while (ne < n)
+    /* Replace 0 with INF */
+    for (i = 0; i < n; i++)
     {
-        int min_val = inf;
+        for (j = 0; j < n; j++)
+        {
+            if (cost[i][j] == 0)
+                cost[i][j] = INF;
+        }
+    }
 
-        /* Find the minimum cost edge */
+    printf("========================\n");
+    printf("Minimum Cost Spanning Tree:\n");
+
+    /* MST contains n-1 edges */
+    while (edges < n - 1)
+    {
+        min = INF;
+
+        /* Find the minimum-cost edge */
         for (i = 0; i < n; i++)
         {
             for (j = 0; j < n; j++)
             {
-                if (cost[i][j] < min_val)
+                if (cost[i][j] < min)
                 {
-                    min_val = cost[i][j];
-
+                    min = cost[i][j];
                     a = u = i;
                     b = v = j;
                 }
             }
         }
 
-        /* Find the parents of the vertices */
-        u = applyfind(u);
-        v = applyfind(v);
+        /* Find roots */
+        u = find(u);
+        v = find(v);
 
-        /* Check whether adding this edge creates a cycle */
-        if (applyunion(u, v) != 0)
+        /* Add edge if it does not form a cycle */
+        if (unionSet(u, v))
         {
-            printf("%d -> %d  Cost = %d\n", a, b, min_val);
-
-            mincost += min_val;
-            ne++;
+            printf("%d -> %d = %d\n", a, b, min);
+            minCost += min;
+            edges++;
         }
 
-        /* Remove this edge from consideration */
-        cost[a][b] = cost[b][a] = inf;
+        /* Remove selected edge */
+        cost[a][b] = INF;
+        cost[b][a] = INF;
     }
 
-    printf("\nMinimum cost = %d\n", mincost);
+    printf("========================\n");
+    printf("Minimum Cost = %d\n", minCost);
+    printf("========================\n");
 
     return 0;
 }

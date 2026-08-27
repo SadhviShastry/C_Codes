@@ -1,20 +1,23 @@
-#include <limits.h>     // For INT_MAX
-#include <stdbool.h>   // For bool, true, false
-#include <stdio.h>     // For input/output functions
+// C Program to Implement Prim's Algorithm
 
-#define V 5             // Graph has 5 vertices (0, 1, 2, 3, 4)
+#include <limits.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-// Function to find the vertex with the minimum weight
+#define MAX 20
+
+// Function to find the vertex with the minimum weight value
 // from the set of vertices not yet included in MST
-int minweight(int weight[], bool visited[])
+int minweight(int weight[], bool visited[], int n)
 {
     int min = INT_MAX;
     int min_index = -1;
 
     // Traverse through all vertices
-    for (int v = 0; v < V; v++)
+    for (int v = 0; v < n; v++)
     {
-        // Select the vertex with minimum weight which is not visited
+        // Select the vertex with minimum weight
+        // which is not visited yet
         if (visited[v] == false && weight[v] < min)
         {
             min = weight[v];
@@ -26,34 +29,40 @@ int minweight(int weight[], bool visited[])
 }
 
 // Function to print the constructed MST and its total cost
-void printMST(int parent[], int graph[V][V])
+void printMST(int parent[], int graph[MAX][MAX], int n)
 {
     int totalCost = 0;
 
-    printf("MST for the graph:\n");
+    printf("Minimum Spanning Tree:\n");
     printf("Edge\tWeight\n");
 
-    // Start from vertex 1, since parent[0] = -1
-    for (int i = 1; i < V; i++)
+    // Start from vertex 1,
+    // since parent[0] = -1 (root of MST)
+    for (int i = 1; i < n; i++)
     {
-        printf("%d - %d\t%d\n", parent[i], i, graph[i][parent[i]]);
+        // Print edge between parent[i] and i
+        printf("%d - %d\t%d\n",
+               parent[i], i, graph[i][parent[i]]);
 
         // Add edge weight to total cost
         totalCost += graph[i][parent[i]];
     }
 
+    // Print total cost of Minimum Spanning Tree
     printf("Total cost of MST: %d\n", totalCost);
 }
 
 // Function to construct and print MST using Prim's Algorithm
-void primMST(int graph[V][V])
+// Graph is represented by adjacency matrix
+void primMST(int graph[MAX][MAX], int n)
 {
-    int parent[V];      // Stores the MST
-    int weight[V];      // Minimum weight edge to connect a vertex
-    bool visited[V];    // Tracks vertices included in MST
+    int parent[MAX];
+    int weight[MAX];
+    bool visited[MAX];
 
-    // Initialize all weights as infinity and visited as false
-    for (int i = 0; i < V; i++)
+    // Initialize all weights as "infinite"
+    // and visited[] as false
+    for (int i = 0; i < n; i++)
     {
         weight[i] = INT_MAX;
         visited[i] = false;
@@ -61,23 +70,26 @@ void primMST(int graph[V][V])
 
     // Always include the first vertex in MST
     weight[0] = 0;
+
+    // Root of MST has no parent
     parent[0] = -1;
 
-    // Construct MST with V-1 edges
-    for (int count = 0; count < V - 1; count++)
+    // Construct MST with n-1 edges
+    for (int count = 0; count < n - 1; count++)
     {
-        // Pick vertex with minimum weight
-        int u = minweight(weight, visited);
+        // Pick vertex with minimum weight edge
+        // not yet included in MST
+        int u = minweight(weight, visited, n);
 
         // Mark the picked vertex as visited
         visited[u] = true;
 
-        // Update weight and parent of adjacent vertices
-        for (int v = 0; v < V; v++)
+        // Update weight[] and parent[] of adjacent vertices
+        for (int v = 0; v < n; v++)
         {
-            // If v is not visited, edge exists,
-            // and edge weight is smaller than current weight
-            if (graph[u][v] != 0 &&
+            // If v is not visited, u-v edge exists,
+            // and its weight is smaller than current weight[v]
+            if (graph[u][v] &&
                 visited[v] == false &&
                 graph[u][v] < weight[v])
             {
@@ -88,23 +100,38 @@ void primMST(int graph[V][V])
     }
 
     // Print the constructed MST
-    printMST(parent, graph);
+    printMST(parent, graph, n);
 }
 
 int main()
 {
-    // Adjacency Matrix representation of the graph
-    int graph[V][V] =
+    int n;
+    int graph[MAX][MAX];
+
+    printf("========================\n");
+    printf("        PRIM'S MST\n");
+    printf("========================\n");
+
+    printf("Enter the no of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter the cost adjacency matrix:\n");
+    printf("(Enter 0 if there is no edge)\n");
+
+    for (int i = 0; i < n; i++)
     {
-        {0, 2, 0, 6, 0},
-        {2, 0, 3, 8, 5},
-        {0, 3, 0, 0, 7},
-        {6, 8, 0, 0, 9},
-        {0, 5, 7, 9, 0}
-    };
+        for (int j = 0; j < n; j++)
+        {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    printf("========================\n");
 
     // Run Prim's Algorithm
-    primMST(graph);
+    primMST(graph, n);
+
+    printf("========================\n");
 
     return 0;
 }
