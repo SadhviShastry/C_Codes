@@ -3,3 +3,4 @@ To Run A File
 2. Execute the following commands 
 PS C:\SADHVI\C_Codes\DSA> gcc filename.c
 PS C:\SADHVI\C_Codes\DSA> ./a.exe
+3. make sure you are in the correct place else cd and paste the path you are in and run this command then Execute step 2 
